@@ -5,7 +5,7 @@
 #include <ctime>
 #include <cmath>
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <Windows.h>
 #include "curses.h"
 #else
@@ -26,7 +26,7 @@ const double PI = 3.141592653589793238463;
 
 void MySleep(int milliseconds)
 {
-#if defined(WIN32)
+#if defined(_WIN32)
 	Sleep(milliseconds);
 #else
 	usleep(milliseconds * 1000);
@@ -48,7 +48,14 @@ void DrawScreen(Ground & g, Player * players, int turn)
 
 void Shoot(Ground & g, Player * players, int turn)
 {
+	bool hit = false;
+	if (hit == true)
+	{
+		mvaddstr(LINES / 2, COLS / 2, "Hit");
+	}
 	double angle = players[turn].angle / 180.0 * PI;
+	//double power = players[turn].power / 5 * 10; Need to figure out "rules" for set values of increasing/decreasing power
+	//Try modifying the speed/time lapse of the shot
 	double y_component = sin(angle) * players[turn].power * 0.2;
 	double x_component = cos(angle) * players[turn].power * 0.2;
 	
@@ -70,12 +77,34 @@ void Shoot(Ground & g, Player * players, int turn)
 		pNx = (int)(p0x + di * x_component);
 		pNy = p0y + di * y_component + (di * di + di) * -9.8 / time_divisor / 1.5;
 		pNy = (int)(LINES - pNy);
+
+		//The idea is to test if the area is good or not
+		//All the statements will define the surrounding good areas
+		//Leaving the inner hit zone for the player
+		if (pNy > g.ground.at((int)pNy) - 1 || pNy < g.ground.at((int)pNy) + 1)
+		{
+			hit = false;
+			
+		}
+		else if (pNx < g.ground.at((int)pNx) + 1 || pNx > g.ground.at((int)pNx) - 1)
+		{
+			hit = false;
+		}
+		else
+		{
+			hit = true;
+			mvaddstr(LINES / 2, COLS / 2, "Hit");
+		}
+			
+		//Testing x and y boundries, terminates when it hits the border
 		if (pNx < 1 || pNx >= COLS - 2)
 			break;
-		if (pNy < 1) {
+		if (pNy < 1) 
+		{
 			MySleep(50);
 			continue;
 		}
+		
 	//	if (pNy >= LINES - 2)
 	//		break;
 		if (pNy > g.ground.at((int)pNx))
@@ -86,6 +115,12 @@ void Shoot(Ground & g, Player * players, int turn)
 		refresh();
 		MySleep(50);
 	}
+	
+	class Vec2D
+	{
+		int px, py;
+		Vec2D();
+	};
 }
 
 int main(int argc, char * argv[])
@@ -104,8 +139,9 @@ int main(int argc, char * argv[])
 	g.InitializeGround();
 	players[0].Initialize(rand() % (COLS / 4), LEFT);
 	players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
-
+	
 	DrawScreen(g, players, turn);
+	
 	while (keep_going)
 	{
 		bool show_char = false;
@@ -116,11 +152,11 @@ int main(int argc, char * argv[])
 			keep_going = false;
 			break;
 
-		case '<':
+		case 'm': //Not connected right
 			players[turn].PowerDown();
 			break;
 
-		case '>':
+		case 'n': //Not connected right
 			players[turn].PowerUp();
 			break;
 
@@ -145,6 +181,7 @@ int main(int argc, char * argv[])
 			show_char = true;
 			break;
 		}
+		//Keypad Trouble Shooting//
 		DrawScreen(g, players, turn);
 		if (show_char) {
 			move(0, 1);

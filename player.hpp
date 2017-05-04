@@ -18,8 +18,10 @@ public:
 	void PowerDown();
 	void AngleUp();
 	void AngleDown();
+	//void PlayerTest();
 
 	int col;
+	int lives;
 	double power;
 	double angle;
 	Side s;
