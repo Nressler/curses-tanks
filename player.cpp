@@ -5,7 +5,7 @@
 #if defined(WIN32)
 #include "curses.h"
 #else
-#include <curses.h>
+#include "curses.h"
 #include <cstdlib>
 #endif
 
@@ -20,10 +20,9 @@ const double Player::angle_increment = 1;
 Player::Player()
 {
 	s = LEFT;
-	col = 0;
 	angle = 45.0;
 	power = 50.0;
-	lives = 3;
+	health = 1;
 }
 
 void Player::Initialize(int column, Side side)
@@ -34,7 +33,7 @@ void Player::Initialize(int column, Side side)
 
 void Player::Draw(Ground & g)
 {
-	mvaddch(g.ground.at(col) - 1, col, '@');
+	mvaddch(g.ground.at(col) - 1, col + 1, ACS_BLOCK);
 }
 
 void Player::PowerUp()
@@ -65,7 +64,6 @@ void Player::AngleDown()
 
 void Player::DrawSettings(int turn)
 {
-	clear();
 	bool my_turn = (turn == 0 && s == LEFT) || (turn == 1 && s == RIGHT);
 
 	int starting_column = 2;
@@ -80,20 +78,19 @@ void Player::DrawSettings(int turn)
 		attron(A_STANDOUT);
 	ss << setw(10) << left << "Player:" << player;
 	mvaddstr(line++, starting_column, ss.str().c_str());
-	
-	
+	if (my_turn)
+		attroff(A_STANDOUT);
+
 	ss = stringstream();
 	ss << setw(10) << left << "Angle: " << setw(6) << angle;
 	mvaddstr(line++, starting_column, ss.str().c_str());
 
-	
 	ss = stringstream();
 	ss << setw(10) << left << "Power: " << setw(6) << power;
 	mvaddstr(line++, starting_column, ss.str().c_str());
-	
 
 	ss = stringstream();
-	ss << setw(10) << left << "Lives:" << setw(6) << lives;
+	ss << setw(10) << left << "Health: " << setw(6) << health;
 	mvaddstr(line++, starting_column, ss.str().c_str());
-	
+
 }

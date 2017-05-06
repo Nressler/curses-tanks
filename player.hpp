@@ -1,3 +1,4 @@
+
 #pragma once
 #include "ground.hpp"
 
@@ -18,12 +19,11 @@ public:
 	void PowerDown();
 	void AngleUp();
 	void AngleDown();
-	//void PlayerTest();
-
 	int col;
-	int lives;
+	int line;
 	double power;
 	double angle;
+	int health;
 	Side s;
 
 	static const int power_increment;

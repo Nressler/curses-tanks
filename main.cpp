@@ -1,11 +1,11 @@
-#include <iostream>
+#include <iostream> //Eryn Benner// & // Nick Ressler
 #include <sstream>
 #include <iomanip>
 #include <vector>
 #include <ctime>
 #include <cmath>
 
-#if defined(_WIN32)
+#if defined(WIN32)
 #include <Windows.h>
 #include "curses.h"
 #else
@@ -28,8 +28,6 @@ void MySleep(int milliseconds)
 {
 #if defined(_WIN32)
 	Sleep(milliseconds);
-#else
-	usleep(milliseconds * 1000);
 #endif
 }
 void DrawScreen(Ground & g, Player * players, int turn)
@@ -43,86 +41,139 @@ void DrawScreen(Ground & g, Player * players, int turn)
 	players[1].DrawSettings(turn);
 	refresh();
 }
+void MainMenu()
+{
+	start_color();
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	attron(COLOR_PAIR(1));
+	move(1, 0);
+	stringstream ss;
+	ss = stringstream();
+	ss << "Welcome to Tanks!";
 
+	addstr(ss.str().c_str());
+
+}
+/*
+int HitBox(int P1 , int shotl, int shotc, int turn)
+{
+
+if (turn == 0)
+{
+if (shotl > players + LINES + 1 || shotl < P1 - LINES - 1)
+{
+
+}
+if (shotc > P1 + COLS + 1 || shotc > P1 - COLS - 1)
+{
+
+}
+}
+}
+*/
 //http://www.iforce2d.net/b2dtut/projected-trajectory
 
-void Shoot(Ground & g, Player * players, int turn)
+class Vec2D
 {
-	bool hit = false;
-	if (hit == true)
-	{
-		mvaddstr(LINES / 2, COLS / 2, "Hit");
-	}
+
+};
+void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
+{
+
+
 	double angle = players[turn].angle / 180.0 * PI;
-	//double power = players[turn].power / 5 * 10; Need to figure out "rules" for set values of increasing/decreasing power
-	//Try modifying the speed/time lapse of the shot
+	//vertical
 	double y_component = sin(angle) * players[turn].power * 0.2;
+	//horizontal
 	double x_component = cos(angle) * players[turn].power * 0.2;
-	
+
 	double pNx;
 	double pNy;
-	double time_divisor = 15.0;
-	
+
+	//flips the bullet if it's the player on the other side of the screen
 	if (players[turn].s == RIGHT)
 		x_component = -x_component;
 
 	double p0x = players[turn].col;
 	double p0y = g.ground.at(players[turn].col);
 	// higher ground numbers are lower altitudes (0 is first line, etc).
+
 	p0y = LINES - p0y;
+
+
 	for (int i = 1; i < 5000; i++)
 	{
-		double di = i / time_divisor;
+		double di = i / 5.0;
 
 		pNx = (int)(p0x + di * x_component);
-		pNy = p0y + di * y_component + (di * di + di) * -9.8 / time_divisor / 1.5;
+		pNy = p0y + di * y_component + (di * di + di) * -0.98 / 2.0;
 		pNy = (int)(LINES - pNy);
-
-		//The idea is to test if the area is good or not
-		//All the statements will define the surrounding good areas
-		//Leaving the inner hit zone for the player
-		if (pNy > g.ground.at((int)pNy) - 1 || pNy < g.ground.at((int)pNy) + 1)
-		{
-			hit = false;
-			
-		}
-		else if (pNx < g.ground.at((int)pNx) + 1 || pNx > g.ground.at((int)pNx) - 1)
-		{
-			hit = false;
-		}
-		else
-		{
-			hit = true;
-			mvaddstr(LINES / 2, COLS / 2, "Hit");
-		}
-			
-		//Testing x and y boundries, terminates when it hits the border
+		//if it goes too far left or too far right this ends the turn
 		if (pNx < 1 || pNx >= COLS - 2)
 			break;
-		if (pNy < 1) 
-		{
-			MySleep(50);
+		//if this goes off the screen upwards it just sleeps until the bomb comes back in
+		if (pNy < 1) {
+			Sleep(50);
 			continue;
 		}
-		
-	//	if (pNy >= LINES - 2)
-	//		break;
-		if (pNy > g.ground.at((int)pNx))
+
+		//if bullet goes off the screen at the bottom
+		if (pNy >= LINES - 2)
 			break;
 
-		move((int)pNy - 1, (int)pNx + 1);
-		addch('*');
-		refresh();
-		MySleep(50);
-	}
-	
-	class Vec2D
-	{
-		int px, py;
-		Vec2D();
-	};
-}
 
+
+		//this makes the bullet only one
+		erase();
+		DrawScreen(g, players, turn);
+		move((int)pNy - 1, (int)pNx + 1);
+		addch(ACS_LANTERN);
+
+
+		refresh();
+		Sleep(100);
+	}
+	//if bomb is within 1 column in either direction of player 1 or on the column
+	if (bulleth == players[0].col || bulleth == players[0].col + 1 || bulleth == players[0].col - 1)
+	{
+		if (bulletv == players[0].line || bulletv == players[0].line + 1 || bulletv == players[0].line - 1)
+		{
+			players[0].health--;
+		}
+	}
+	//if bomb is within 1 column in either direction of player 2
+	if (bulleth == players[1].col || bulleth == players[1].col + 1 || bulleth == players[1].col - 1)
+	{
+		if (bulletv == players[1].line || bulletv == players[1].line + 1 || bulletv == players[1].line - 1)
+		{
+			players[1].health--;
+		}
+
+	}
+	bulleth = pNx + 1;
+	bulletv = pNy - 1;
+
+	stringstream ss;
+	ss = stringstream();
+	ss << "col: " << bulleth;
+	move(1, COLS / 2 - 3);
+	addstr(ss.str().c_str());
+	refresh();
+
+	ss = stringstream();
+	ss << "line: " << bulletv;
+	move(2, COLS / 2 - 3);
+	addstr(ss.str().c_str());
+	refresh();
+
+	ss = stringstream();
+	ss << "#";
+	move(bulletv, bulleth);
+	addstr(ss.str().c_str());
+	refresh();
+
+	Sleep(1200);
+}
 int main(int argc, char * argv[])
 {
 	srand((unsigned int)time(nullptr));
@@ -132,18 +183,28 @@ int main(int argc, char * argv[])
 	Ground g;
 	Player players[2];
 
+
+
 	initscr();
 	noecho();
-	keypad(stdscr, 1);
+	while (!getch() == KEY_ENTER)
+	{
+		MainMenu();
 
+	}
+	clear();
+	keypad(stdscr, 1);
+	int bulleth = 0;
+	int bulletv = 0;
 	g.InitializeGround();
 	players[0].Initialize(rand() % (COLS / 4), LEFT);
 	players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
-	
+
 	DrawScreen(g, players, turn);
-	
+
 	while (keep_going)
 	{
+
 		bool show_char = false;
 		int c = getch();
 		switch (c)
@@ -152,11 +213,11 @@ int main(int argc, char * argv[])
 			keep_going = false;
 			break;
 
-		case 'm': //Not connected right
+		case '<':
 			players[turn].PowerDown();
 			break;
 
-		case 'n': //Not connected right
+		case '>':
 			players[turn].PowerUp();
 			break;
 
@@ -173,7 +234,8 @@ int main(int argc, char * argv[])
 #if defined(WIN32)
 		case PADENTER:
 #endif
-			Shoot(g, players, turn);
+			Shoot(g, players, turn, bulleth, bulletv);
+			//HitBox(players[1].Initialize(), )
 			turn = 1 - turn;
 			break;
 
@@ -181,7 +243,6 @@ int main(int argc, char * argv[])
 			show_char = true;
 			break;
 		}
-		//Keypad Trouble Shooting//
 		DrawScreen(g, players, turn);
 		if (show_char) {
 			move(0, 1);
