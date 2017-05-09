@@ -467,7 +467,7 @@ int main(int argc, char * argv[])
 			default:
 				//show_char = false;
 				break;
-			}
+			} // end switch
 			DrawScreen(g, players, turn);
 
 
@@ -496,8 +496,8 @@ int main(int argc, char * argv[])
 				keep_going = false;
 
 			}
-
 		}
+		 // keep going
 
 		
 		Win(w);
@@ -507,15 +507,15 @@ int main(int argc, char * argv[])
 		char pg = ' ';
 		char input = getch();
 		bool playagain = true;
-		//while (playagain == true)
-	//	{
+		while (playagain == true)
+		{
 			if (input == 'y')
 			{
 				playagain == false;
 				break;
 			}
 
-			else if (input == 'n')
+			if (input == 'n')
 			{
 				new_game = false;
 				break;
@@ -523,7 +523,7 @@ int main(int argc, char * argv[])
 			}
 			else
 				continue;
-		//} // keep going
+		}// play again
 	} // new game
 	return 0;
 } // main
