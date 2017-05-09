@@ -6,13 +6,11 @@
 
  ### Rules:
  * The first player to make their partner lose **all three lives** wins!
- * Power maxes at 75
- * Angle maxes at 90 degrees
- 
- ### Shooting
+
+### Shooting
  * Use the **f** key to shoot a bullet
  
- ### Change the angle of the shot
+### Change the angle of the shot
  * The **RIGHT** arrow key makes the angle go up
  
  * The **LEFT** angle key makes the angle go down
