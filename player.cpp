@@ -26,7 +26,7 @@ Player::Player()
 	health = 1;
 	angle = 45.0;
 	power = 50.0;
-	health = 3;
+	health = 2; // changed for testing
 }
 
 void Player::Initialize(int column, Side side)

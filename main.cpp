@@ -36,7 +36,7 @@ void Win(string s)
 		stringstream ss;
 		ss = stringstream();
 		move(1, COLS / 2 - 3);
-		ss << s << " Wins!";
+		ss << s << " Winner!";
 		addstr(ss.str().c_str());
 		move(2, COLS / 2 - 3);
 		ss = stringstream();
@@ -213,6 +213,12 @@ int MainMenu()
 
 
 	}
+	if (c == 'q')
+	{
+		rv = 4;
+
+
+	}
 	
 
 	//add a case where if none of the options are chosen nothing happens
@@ -386,6 +392,7 @@ int main(int argc, char * argv[])
 {
 
 	initscr();
+	bool new_game = true;
 	while (true) {
 		bool quit = true;
 		while (quit)
@@ -398,25 +405,19 @@ int main(int argc, char * argv[])
 				int x = 0;
 				x = MainMenu();
 
-				//quit
-				if (x == 4)
+				if (x == 3)
 
 				{
 					quit = false;
 					break;
 				}
-				if (x == 3)
 
-				{
-
-					break;
-				}
 			}
 
 
 		}
 
-		bool new_game = true;
+		
 		//new game
 		while (new_game)
 		{
@@ -427,7 +428,7 @@ int main(int argc, char * argv[])
 			Player players[2];
 			string w;
 			initscr();
-
+			
 			keypad(stdscr, 1);
 			int bulleth = 0;
 			int bulletv = 0;
@@ -505,34 +506,35 @@ int main(int argc, char * argv[])
 				DrawScreen(g, players, turn);
 
 
-
-
-				if (players[0].Win_check == true)
+				while (players[0].Win_check == true || players[1].Win_check == true)
 				{
-
-
+					if (players[0].Win_check == true)
 					{
-						w = "Player 1";
 
+
+						{
+							w = "Player 1";
+
+						}
+
+						keep_going = false;
+						new_game = true;
+						break;
 					}
 
-					keep_going = false;
-
-				}
-
-				else if (players[1].Win_check == true)
-				{
-
-
+					else if (players[1].Win_check == true)
 					{
-						w = "Player 2";
 
+
+						{
+							w = "Player 2";
+
+						}
+						new_game = true;
+						keep_going = false;
+						break;
 					}
-
-					keep_going = false;
-
-				}
-
+			}
 			}
 			erase();
 			endwin();
@@ -555,6 +557,7 @@ int main(int argc, char * argv[])
 				else if (input == 'n')
 				{
 					new_game = false;
+					return 0;
 					break;
 
 				}
