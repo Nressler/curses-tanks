@@ -46,6 +46,7 @@ void Win(string s)
 	
 }
 
+
 void MySleep(int milliseconds)
 {
 #if defined(_WIN32)
@@ -66,11 +67,12 @@ void DrawScreen(Ground & g, Player * players, int turn)
 
 int MainMenu()
 {
-	erase();
-	initscr();
+	
+	int rv = 0;
 	noecho();
 	keypad(stdscr, 1);
 	refresh();
+
 	start_color();
 	init_color(COLOR_RED, 1000, 0, 0);
 	init_pair(1, COLOR_RED, COLOR_BLACK);
@@ -80,7 +82,6 @@ int MainMenu()
 	init_pair(5, COLOR_BLUE, COLOR_BLACK);
 	init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
 ;
-	int rv = 0;
 	
 	stringstream ss;
 	attron(COLOR_PAIR(1));
@@ -196,10 +197,23 @@ int MainMenu()
 	move(LINES - 3, 48);
 	ss << "Press ENTER to Continue";
 	addstr(ss.str().c_str());
+	
+	refresh();
 
 	char c = getch();
 	if (c == 10)
-		rv = 4;
+	{
+		rv = 3;
+
+
+	}
+	if (c == 'e')
+	{
+		rv = 3;
+
+
+	}
+	
 
 	//add a case where if none of the options are chosen nothing happens
 
@@ -278,31 +292,34 @@ void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
 		addch(ACS_LANTERN);
 
 		refresh();
-		// super fast
-		if (players[turn].power >= 90)
+		//fast
+		if (players[turn].power > 75 && players[turn].power <= 90)
+
 		{
 			Sleep(50);
 		}
-		//fast
-		if(players[turn].power > 75 && players[turn].power < 90)
-		{
-			Sleep(90);
-		}
+
 		//average
-		if(players[turn].power > 50 && players[turn].power < 75)
+		if (players[turn].power > 50 && players[turn].power <= 75)
+
 		{
-			Sleep(125);
+			Sleep(55);
 		}
+
 		//slower
-		if(players[turn].power > 25 && players[turn].power < 50)
+		if (players[turn].power > 25 && players[turn].power <= 50)
+
 		{
-			Sleep(150);
+			Sleep(60);
 		}
+
 		//super slow
 		if (players[turn].power <= 25)
+
 		{
-			Sleep(175);
+			Sleep(65);
 		}
+
 	
 	}
 
@@ -367,163 +384,190 @@ void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
 
 int main(int argc, char * argv[])
 {
-	srand((unsigned int)time(nullptr));
 
-	int turn = 0;
-	bool keep_going = true;
-	Ground g;
-	Player players[2];
-	string w;
 	initscr();
-
-	while (true)
-	{
-		bool quit;
-		quit = true;
-		keypad(stdscr, 1);
-
-		int x = 0;
-		x = MainMenu();
-		//quit
-		if (x == 4)
+	while (true) {
+		bool quit = true;
+		while (quit)
 		{
-			quit = false;
-			break;
+
+			{
+				bool quit;
+				quit = true;
+				keypad(stdscr, 1);
+				int x = 0;
+				x = MainMenu();
+
+				//quit
+				if (x == 4)
+
+				{
+					quit = false;
+					break;
+				}
+				if (x == 3)
+
+				{
+
+					break;
+				}
+			}
+
+
 		}
 
-	}
-
-	clear();
-	keypad(stdscr, 1);
-	int bulleth = 0;
-	int bulletv = 0;
-	g.InitializeGround();
-	players[0].Initialize(rand() % (COLS / 4), LEFT);
-	players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
-	DrawScreen(g, players, turn);
-
-	bool new_game = true;
-
-	while (new_game == true)
-	{
-
-
-
-		//this is the player loop
-		while (keep_going)
+		bool new_game = true;
+		//new game
+		while (new_game)
 		{
 
-			refresh();
+			srand((unsigned int)time(nullptr));
+			int turn = 0;
+			Ground g;
+			Player players[2];
+			string w;
+			initscr();
 
-			bool show_char = false;
-			int c = getch();
-			switch (c)
-			{
-			case 27:
-			case KEY_DOWN:
-
-
-				players[turn].PowerDown();
-
-
-				break;
-
-
-
-			case KEY_UP:
-
-
-				players[turn].PowerUp();
-
-
-				break;
-
-
-
-			case KEY_RIGHT:
-
-
-				players[turn].AngleUp();
-
-
-				break;
-
-
-
-			case KEY_LEFT:
-				players[turn].AngleDown();
-
-
-				break;
-
-			case KEY_ENTER: // not working
-#if defined(WIN32)
-			case PADENTER: // USE THIS
-#endif
-				Shoot(g, players, turn, bulleth, bulletv);
-
-				turn = 1 - turn;
-				break;
-			default:
-				//show_char = false;
-				break;
-			} // end switch
+			keypad(stdscr, 1);
+			int bulleth = 0;
+			int bulletv = 0;
+			g.InitializeGround();
+			players[0].Initialize(rand() % (COLS / 4), LEFT);
+			players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
 			DrawScreen(g, players, turn);
+			bool keep_going = true;
 
 
-
-
-			if (players[0].Win_check == true)
+			//this is the player loop
+			while (keep_going)
 			{
 
 
+				char quit = 'q';
+				bool show_char = false;
+				int c = getch();
+				switch (c)
 				{
-					w = "Player 1";
+				case 27:
+					keep_going = false;
+					break;
+				case KEY_DOWN:
+
+
+					players[turn].PowerDown();
+
+
+					break;
+
+
+
+				case KEY_UP:
+
+
+					players[turn].PowerUp();
+
+
+					break;
+
+
+
+				case KEY_RIGHT:
+
+
+					players[turn].AngleUp();
+
+
+					break;
+
+
+
+				case KEY_LEFT:
+					players[turn].AngleDown();
+
+
+					break;
+				case 'q':
+					keep_going = false;
+					break;
+
+					//n	case KEY_ENTER: // not working
+
+
+				case 'f':
+					Shoot(g, players, turn, bulleth, bulletv);
+					turn = 1 - turn;
+					break;
+
+				default:
+					//show_char = false;
+					break;
+				}
+				DrawScreen(g, players, turn);
+
+
+
+
+				if (players[0].Win_check == true)
+				{
+
+
+					{
+						w = "Player 1";
+
+					}
+
+					keep_going = false;
+
 				}
 
-				keep_going = false;
+				else if (players[1].Win_check == true)
+				{
+
+
+					{
+						w = "Player 2";
+
+					}
+
+					keep_going = false;
+
+				}
 
 			}
+			erase();
+			endwin();
+			Win(w);
 
-			else if (players[1].Win_check == true)
+			//play again
+			char pg = ' ';
+			bool playagain = true;
+			while (playagain)
 			{
 
-
+				char input = getch();
+				if (input == 'y')
 				{
-					w = "Player 2";
+
+					new_game = true;
+					break;
 				}
 
-				keep_going = false;
+				else if (input == 'n')
+				{
+					new_game = false;
+					break;
+
+				}
+				else
+				{
+					continue;
+				}
+
 
 			}
+
 		}
-		 // keep going
-
-		
-		Win(w);
-
-
-		//play again
-		char pg = ' ';
-		char input = getch();
-		bool playagain = true;
-		while (playagain == true)
-		{
-			if (input == 'y')
-			{
-				playagain == false;
-				break;
-			}
-
-			if (input == 'n')
-			{
-				new_game = false;
-				break;
-
-			}
-			else
-				continue;
-		}// play again
-	} // new game
+	}
+	
 	return 0;
-} // main
+}
