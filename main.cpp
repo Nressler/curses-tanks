@@ -24,10 +24,9 @@ extern int base_height_divisor;
 extern int max_height_divisor;
 
 const double PI = 3.141592653589793238463;
-void P1Win(Player * players)
+void Win(string s)
 {
-	if (players[1].health == 0)
-	{
+	
 		erase();
 		initscr();
 		noecho();
@@ -37,27 +36,16 @@ void P1Win(Player * players)
 		stringstream ss;
 		ss = stringstream();
 		move(1, COLS / 2 - 3);
-		ss << "Player 1 Wins!";
+		ss << s << " Wins!";
 		addstr(ss.str().c_str());
-	}
-}
-void P2Win(Player * players)
-{
-	if (players[0].health == 0)
-	{
-		erase();
-		initscr();
-		noecho();
-		keypad(stdscr, 1);
-		refresh();
-		stringstream ss;
+		move(2, COLS / 2 - 3);
 		ss = stringstream();
-		move(1, COLS / 2 - 3);
-		ss << "Player 2 Wins!";
+		ss << "Play Again ? y/n";
 		addstr(ss.str().c_str());
-	}
-
+		
+	
 }
+
 void MySleep(int milliseconds)
 {
 #if defined(_WIN32)
@@ -362,13 +350,17 @@ void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
 
 	if (players[0].health == 0)
 	{
-		P2Win(players);
+		players[1].Win_check = true;
+	
 	}
+
 	if (players[1].health == 0)
 	{
+		players[0].Win_check = true;
 		
-		P1Win(players);
+		
 	}
+	
 }
 	
 
@@ -381,29 +373,26 @@ int main(int argc, char * argv[])
 	bool keep_going = true;
 	Ground g;
 	Player players[2];
-	
+	string w;
 	initscr();
-	
+
 	while (true)
 	{
 		bool quit;
 		quit = true;
-
 		keypad(stdscr, 1);
-	
 
 		int x = 0;
 		x = MainMenu();
-
 		//quit
 		if (x == 4)
 		{
 			quit = false;
 			break;
 		}
-		
+
 	}
-	
+
 	clear();
 	keypad(stdscr, 1);
 	int bulleth = 0;
@@ -411,71 +400,130 @@ int main(int argc, char * argv[])
 	g.InitializeGround();
 	players[0].Initialize(rand() % (COLS / 4), LEFT);
 	players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
-
 	DrawScreen(g, players, turn);
 
-	while (keep_going)
+	bool new_game = true;
+
+	while (new_game == true)
 	{
-		
-		
-		bool show_char = false;
-		int c = getch();
-		switch (c)
+
+
+
+		//this is the player loop
+		while (keep_going)
 		{
-		case 27:
-			keep_going = false;
-			break;
 
-		case KEY_DOWN:
-			players[turn].PowerDown();
-			break;
-
-		case KEY_UP:
-			players[turn].PowerUp();
-			break;
-
-		case KEY_RIGHT:
-			players[turn].AngleUp();
-			break;
-
-		case KEY_LEFT:
-			players[turn].AngleDown();
-			break;
-
-		case 10:
-		case KEY_ENTER:
-#if defined(WIN32)
-		case PADENTER:
-#endif
-			Shoot(g, players, turn, bulleth, bulletv);
-			turn = 1 - turn;
-			break;
-			players[1].health == 0;
-			break;
-			players[2].health == 0;
-			break;
-		default:
-			show_char = true;
-			break;
-		}
-		DrawScreen(g, players, turn);
-		if (show_char) {
-			move(0, 1);
-			stringstream ss;
-			ss << setw(4) << c << " ";
-			addstr(ss.str().c_str());
 			refresh();
+
+			bool show_char = false;
+			int c = getch();
+			switch (c)
+			{
+			case 27:
+			case KEY_DOWN:
+
+
+				players[turn].PowerDown();
+
+
+				break;
+
+
+
+			case KEY_UP:
+
+
+				players[turn].PowerUp();
+
+
+				break;
+
+
+
+			case KEY_RIGHT:
+
+
+				players[turn].AngleUp();
+
+
+				break;
+
+
+
+			case KEY_LEFT:
+				players[turn].AngleDown();
+
+
+				break;
+
+			case KEY_ENTER: // not working
+#if defined(WIN32)
+			case PADENTER: // USE THIS
+#endif
+				Shoot(g, players, turn, bulleth, bulletv);
+
+				turn = 1 - turn;
+				break;
+			default:
+				//show_char = false;
+				break;
+			}
+			DrawScreen(g, players, turn);
+
+
+
+
+			if (players[0].Win_check == true)
+			{
+
+
+				{
+					w = "Player 1";
+				}
+
+				keep_going = false;
+
+			}
+
+			else if (players[1].Win_check == true)
+			{
+
+
+				{
+					w = "Player 2";
+				}
+
+				keep_going = false;
+
+			}
+
 		}
-	
-	}
-	/*
-	erase();
-	addstr("Hit any key to exit");
-	refresh();
-	getch();
-	echo();
-	endwin();
+
+		
+		Win(w);
+
+
+		//play again
+		char pg = ' ';
+		char input = getch();
+		bool playagain = true;
+		//while (playagain == true)
+	//	{
+			if (input == 'y')
+			{
+				playagain == false;
+				break;
+			}
+
+			else if (input == 'n')
+			{
+				new_game = false;
+				break;
+
+			}
+			else
+				continue;
+		//} // keep going
+	} // new game
 	return 0;
-	*/
-	return 0;
-}
+} // main

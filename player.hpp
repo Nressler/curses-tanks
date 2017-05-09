@@ -23,6 +23,7 @@ public:
 	double power;
 	double angle;
 	int health;
+	bool Win_check;
 	Side s;
 
 	static const int power_increment;
