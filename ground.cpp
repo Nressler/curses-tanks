@@ -38,3 +38,4 @@ void Ground::Draw()
 		mvaddch(ground.at(i), i + 1, ACS_HLINE);
 	}
 }
+

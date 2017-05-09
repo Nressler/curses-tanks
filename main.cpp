@@ -26,6 +26,26 @@ extern int max_height_divisor;
 
 const double PI = 3.141592653589793238463;
 
+void Win(string s)
+{
+	erase();
+	initscr();
+	noecho();
+	keypad(stdscr, 1);
+	refresh();
+
+	stringstream ss;
+
+	ss = stringstream();
+	ss << s << " Wins!";
+	mvaddstr(1, COLS / 2 - 3, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "Play Again ? y/n";
+	mvaddstr(2, COLS / 2 - 3, ss.str().c_str());
+}
+
+
 void MySleep(int milliseconds)
 {
 #if defined(_WIN32)
@@ -46,6 +66,11 @@ void DrawScreen(Ground & g, Player * players, int turn)
 int MainMenu()
 
 {
+	erase();
+	initscr();
+	noecho();
+	keypad(stdscr, 1);
+	refresh();
 	start_color();
 	init_color(COLOR_RED, 1000, 0, 0);
 	init_pair(1, COLOR_RED, COLOR_BLACK);
@@ -193,7 +218,7 @@ int MainMenu()
 	return rv;
 }
 
-bool hit = false;
+
 /*
 int HitBox(int P1 , int shotl, int shotc, int turn)
 {
@@ -325,7 +350,7 @@ void Shoot(Ground & g, Player * players, int turn, double bulleth, double bullet
 
 	//Testing bullet coordinates//
 	stringstream ss;
-	ss = stringstream();
+	/*ss = stringstream();
 	ss << "col: " << bulleth;
 
 	mvaddstr(1, COLS / 2 - 3, ss.str().c_str());
@@ -337,51 +362,52 @@ void Shoot(Ground & g, Player * players, int turn, double bulleth, double bullet
 	mvaddstr(2, COLS / 2 - 3, ss.str().c_str());
 	refresh();
 
-	Sleep(1500);
+	Sleep(1500);*/
 
 	if (pNy >= g.ground.at((int)pNy))
 
 	{
-		g.ground.at((int)pNx)++;
+		g.ground_break = true;
+		if (g.ground_break == true)
+		{
+			g.ground.at((int)pNx)++;
 
-		g.ground.at((int)pNx - 1)++;
+			g.ground.at((int)pNx - 1)++;
 
-		g.ground.at((int)pNx + 1)++;
+			g.ground.at((int)pNx + 1)++;
+		}
 	}
 	
 	//makes it so if the bullet is within col of player 1, it will hit
 	if (bulleth >= g.ground.at(players[0].col) - 1 && bulletv <= players[0].col + 1 || bulleth <= g.ground.at(players[0].col) && bulletv >= players[0].col - 1)
 	{
+		g.ground_break = false;
 		players[0].health--;
+		players[0].Initialize(rand() % (COLS / 4), LEFT);
+		players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
+
+		DrawScreen(g, players, turn);
+		
 		if (players[0].health == 0)
 		{
-			ss = stringstream();
-			ss << "Player 1 is Dead! ";
-			move(2, COLS / 5 - 3);
-			addstr(ss.str().c_str());
-
-			Sleep(1000);
-			refresh();
+			players[1].Win_check = true;
 		}
 	}
 
 	//makes it so if the bullet is within col of player 2, it will hit
 	if (bulleth >= g.ground.at(players[1].col) && bulletv <= players[1].col + 1 || bulleth <= g.ground.at(players[1].col) && bulletv >= players[1].col - 1)
 	{
+		g.ground_break = false;
 		players[1].health--;
+		players[0].Initialize(rand() % (COLS / 4), LEFT);
+		players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
+
+		DrawScreen(g, players, turn);
 		if (players[1].health == 0)
 		{
-			ss = stringstream();
-			ss << "Player 2 is Dead! ";
-			move(2, COLS / 5 - 3);
-			addstr(ss.str().c_str());
-
-			Sleep(1000);
-			refresh();
+			players[0].Win_check = true;
 		}
-	}
-	
-	
+	}	
 }
 
 int main(int argc, char * argv[])
@@ -392,6 +418,7 @@ int main(int argc, char * argv[])
 	bool keep_going = true;
 	Ground g;
 	Player players[2];
+	string w;
 	
 	initscr();
 	while (true)
@@ -421,10 +448,11 @@ int main(int argc, char * argv[])
 	players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);
 
 	DrawScreen(g, players, turn);
-	
+
+	bool new_game = true;
+
 	while (keep_going)
 	{
-		
 		bool show_char = false;
 		int c = getch();
 		switch (c)
@@ -458,24 +486,77 @@ int main(int argc, char * argv[])
 			//HitBox(players[1].Initialize(), )
 			turn = 1 - turn;
 			break;
+			players[0].health = 0;
+			break;
+			players[1].health = 0;
+			break;
 
 		default:
 			show_char = true;
 			break;
-		}
+		} //end switch
 		DrawScreen(g, players, turn);
 		if (show_char) {
+			move(0, 1);
 			stringstream ss;
 			ss << setw(4) << c << " ";
-			mvaddstr(0, 1, ss.str().c_str());
+			addstr(ss.str().c_str());
 			refresh();
+
+			if (players[0].Win_check == true)
+			{
+				{
+					w = "Player 1";
+				}
+
+				keep_going = false;
+			}
+
+			else if (players[1].Win_check == true)
+			{
+				{
+					w = "Player 2";
+				}
+
+				keep_going = false;
+			}
 		}
-	}
-	erase();
-	addstr("Hit any key to exit");
-	refresh();
-	getch();
-	echo();
-	endwin();
-	return 0;
+		// keep going
+
+		Win(w);
+
+		//play again
+		char pg = ' ';
+		char input = getch();
+		
+		if (input == 'y')
+		{
+			bool playagain = true;
+			if (playagain = true)
+			{
+				MainMenu();
+			}
+			break;
+		}
+
+		if (input == 'n')
+		{
+			bool playagain = false;
+			if (playagain == false)
+				break;
+		}
+		else
+			continue;
+		// play again
+	}// new game
+		return 0;
 }
+	/*if (show_char) {
+	stringstream ss;
+	ss << setw(4) << c << " ";
+	mvaddstr(0, 1, ss.str().c_str());
+	refresh();*/
+	// main
+
+	
+

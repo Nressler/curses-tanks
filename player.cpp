@@ -19,6 +19,7 @@ const double Player::angle_increment = 1;
 
 Player::Player()
 {
+	bool Win_check = false;
 	s = LEFT;
 	angle = 45.0;
 	power = 50.0;
