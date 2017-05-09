@@ -17,6 +17,7 @@
 
 #include "ground.hpp"
 #include "player.hpp"
+#include "Vec2D.hpp"
 
 using namespace std;
 
@@ -45,42 +46,54 @@ void DrawScreen(Ground & g, Player * players, int turn)
 int MainMenu()
 
 {
+	start_color();
+	init_color(COLOR_RED, 1000, 0, 0);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(3, COLOR_GREEN, COLOR_BLACK);
+	init_pair(4, COLOR_CYAN, COLOR_BLACK);
+	init_pair(5, COLOR_BLUE, COLOR_BLACK);
+	init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
 	int rv = 0;
-	//init_pair(1, COLOR_RED, COLOR_BLACK);
-
-	//attron(COLOR_PAIR(1));
-
+	
 	WINDOW *w;
 	w = newwin(10, 12, 1, 1);
 	box(w, 0, 0);
 	stringstream ss;
 
 	//Welcome to Tanks! Sign//
+	attron(COLOR_PAIR(1));
+	ss = stringstream();
 	ss << " _    _      _                            _          _____           _        _";
 	mvaddstr(1, COLS /2 - 42, ss.str().c_str());
 
 	ss = stringstream();
 	ss << "| |  | |    | |                          | |        |_   _|         | |      | |";
 	mvaddstr(2, COLS / 2 - 42, ss.str().c_str());
+	attroff(COLOR_PAIR(1));
 
 	ss = stringstream();
+	attron(COLOR_PAIR(2));
 	ss << "| |  | | ___| | ___ ___  _ __ ___   ___  | |_ ___     | | __ _ _ __ | | _____| |";
 	mvaddstr(3, COLS / 2 - 42, ss.str().c_str());
 
 	ss = stringstream();
 	ss << "| |/\\| |/ _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\    | |/ _` | '_ \\| |/ / __| |";
 	mvaddstr(4, COLS / 2 - 42, ss.str().c_str());
+	attroff(COLOR_PAIR(2));
 
 	ss = stringstream();
+	attron(COLOR_PAIR(3));
 	ss << "\\  /\\  /  __/ | (_| (_) | | | | | |  __/ | || (_) |   | | (_| | | | |   <\\__ \\_|";
 	mvaddstr(5, COLS / 2 - 42, ss.str().c_str());
 
 	ss = stringstream();
 	ss << " \\/  \\/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/    \\_/\\__,_|_| |_|_|\\_\\___(_)";
 	mvaddstr(6, COLS / 2 - 42, ss.str().c_str());
+	attroff(COLOR_PAIR(3));
 
 	//Created by Sign//
-	
+	attron(COLOR_PAIR(4));
 	ss = stringstream();
 	ss << "  ___              _          _   _         ";
 	mvaddstr(8, COLS / 2 - 24,ss.str().c_str());
@@ -92,7 +105,9 @@ int MainMenu()
 	ss = stringstream();
 	ss << "| (__| '_/ -_) _` |  _/ -_) _` | | '_ \\ || |";
 	mvaddstr(10, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(4));
 
+	attron(COLOR_PAIR(5));
 	ss = stringstream();
 	ss << " \\___|_| \\___\\__,_|\\__\\___\\__,_| |_.__/\\_, |";
 	mvaddstr(11, COLS / 2 - 24, ss.str().c_str());
@@ -100,9 +115,10 @@ int MainMenu()
 	ss = stringstream();
 	ss << "                                       |__/ ";
 	mvaddstr(12, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(5));
 
 	//Nick Ressler Sign//
-
+	attron(COLOR_PAIR(6));
 	ss = stringstream();
 	ss << " _  _ _    _     ___           _         ";
 	mvaddstr(13, COLS / 2 - 23, ss.str().c_str());
@@ -110,7 +126,8 @@ int MainMenu()
 	ss = stringstream();
 	ss << "| \\| (_)__| |__ | _ \\___ _____| |___ _ _ ";
 	mvaddstr(14, COLS / 2 - 23, ss.str().c_str());
-
+	attroff(COLOR_PAIR(6));
+	attron(COLOR_PAIR(1));
 	ss = stringstream();
 	ss << "| .` | / _| / / |   / -_|_-<_-< / -_) '_|";
 	mvaddstr(15, COLS / 2 - 23, ss.str().c_str());
@@ -118,7 +135,8 @@ int MainMenu()
 	ss = stringstream();
 	ss << "|_|\\_|_\\__|_\\_\\ |_|_\\___/__/__/_\\___|_|  ";
 	mvaddstr(16, COLS / 2 - 23, ss.str().c_str());
-
+	attroff(COLOR_PAIR(1));
+	attron(COLOR_PAIR(2));
 	//& Sign//
 
 	ss = stringstream();
@@ -128,7 +146,8 @@ int MainMenu()
 	ss = stringstream();
 	ss << "/ _|___ ";
 	mvaddstr(18, COLS / 2 - 4, ss.str().c_str());
-
+	attroff(COLOR_PAIR(2));
+	attron(COLOR_PAIR(3));
 	ss = stringstream();
 	ss << "> _|_ _|";
 	mvaddstr(19, COLS / 2 - 4, ss.str().c_str());
@@ -136,6 +155,8 @@ int MainMenu()
 	ss = stringstream();
 	ss << "\\_____| ";
 	mvaddstr(20, COLS / 2 - 4, ss.str().c_str());
+	attroff(COLOR_PAIR(3));
+	attron(COLOR_PAIR(4));
 
 	//Eryn Benner Sign//
 
@@ -146,7 +167,8 @@ int MainMenu()
 	ss = stringstream();
 	ss << "| __|_ _ _  _ _ _   | _ ) ___ _ _  _ _  ___ _ _ ";
 	mvaddstr(22, COLS / 2 - 24, ss.str().c_str());
-
+	attroff(COLOR_PAIR(4));
+	attron(COLOR_PAIR(5));
 	ss = stringstream();
 	ss << "| _|| '_| || | ' \\  | _ \\/ -_) ' \\| ' \\/ -_) '_|";
 	mvaddstr(23, COLS / 2 - 24, ss.str().c_str());
@@ -154,10 +176,11 @@ int MainMenu()
 	ss = stringstream();
 	ss << "|___|_|  \\_, |_||_| |___/\\___|_||_|_||_\\___|_|  ";
 	mvaddstr(24, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(5));
 
 	ss = stringstream();
 	move(LINES - 2, 43);
-	ss << "Press The ENTER to Continue";
+	ss << "Press ENTER to Continue";
 	addstr(ss.str().c_str());
 
 	char c = getch();
@@ -190,11 +213,8 @@ int HitBox(int P1 , int shotl, int shotc, int turn)
 */
 //http://www.iforce2d.net/b2dtut/projected-trajectory
 
-class Vec2D
-{
 
-};
-void Shoot(Ground & g, Player * players, int turn, double bulleth, double bulletv, bool hit)
+void Shoot(Ground & g, Player * players, int turn, double bulleth, double bulletv)
 {
 	double angle = players[turn].angle / 180.0 * PI;
 	//vertical
@@ -223,7 +243,7 @@ void Shoot(Ground & g, Player * players, int turn, double bulleth, double bullet
 		pNy = p0y + di * y_component + (di * di + di) * -0.98 / 2.0;
 		pNy = (int)(LINES - pNy);
 		//if it goes too far left or too far right this ends the turn
-		if (pNx < 1 || pNx >= COLS - 2)
+		if (pNx < 2 || pNx >= COLS - 2)
 			break;
 		//if this goes off the screen upwards it just sleeps until the bomb comes back in
 		if (pNy < 1) {
@@ -231,70 +251,48 @@ void Shoot(Ground & g, Player * players, int turn, double bulleth, double bullet
 			continue;
 		}
 
-		//if bullet goes off the screen at the bottom
+		//if bullet goes off the screen 
 		if (pNy >= LINES - 2)
-			break;
-		if (pNy >= LINES - 2)
-
 			break;
 
 		//Bullet wont go through the ground
-
-		if (pNy >= g.ground.at((int)pNx))
-
-		{
-			g.ground.at((int)pNx)++;
-
-			g.ground.at((int)pNx - 1)++;
-
-			g.ground.at((int)pNx + 1)++;
-
+		if (pNx >= g.ground.at((int)pNx) && pNy == g.ground.at((int)pNy))
 			break;
-
-		}
+		
 		//this makes the bullet only one
 		erase();
 		DrawScreen(g, players, turn);
-		mvaddch((int)pNy - 1, (int)pNx + 1, ACS_LANTERN);
+		mvaddch((int)pNy - 1, (int)pNx, ACS_LANTERN);
 
 		refresh();
-
-		// super fast
-		if (players[turn].power >= 90)
-		{
-			Sleep(50);
-		}
 
 		//fast
 		if (players[turn].power > 75 && players[turn].power <= 90)
 
 		{
-			Sleep(90);
+			Sleep(50);
 		}
 
 		//average
 		if (players[turn].power > 50 && players[turn].power <= 75)
 
 		{
-			Sleep(125);
+			Sleep(55);
 		}
 
 		//slower
 		if (players[turn].power > 25 && players[turn].power <= 50)
 
 		{
-			Sleep(150);
+			Sleep(60);
 		}
 
 		//super slow
 		if (players[turn].power <= 25)
 
 		{
-			Sleep(175);
+			Sleep(65);
 		}
-
-		bulleth = pNx; //y
-		bulletv = pNy; //x
 
 		//if bomb is within 1 column in either direction of player 1 or on the column
 		//                         line - 1                           
@@ -321,6 +319,10 @@ void Shoot(Ground & g, Player * players, int turn, double bulleth, double bullet
 			players[1].health--;*/
 
 	}
+
+	bulleth = pNx; //y
+	bulletv = pNy; //x
+
 	//Testing bullet coordinates//
 	stringstream ss;
 	ss = stringstream();
@@ -335,13 +337,53 @@ void Shoot(Ground & g, Player * players, int turn, double bulleth, double bullet
 	mvaddstr(2, COLS / 2 - 3, ss.str().c_str());
 	refresh();
 
-	ss = stringstream();
-	ss << "#";
-	mvaddstr(bulletv, bulleth, ss.str().c_str());
-	refresh();
+	Sleep(1500);
 
-	Sleep(1200);
+	if (pNy >= g.ground.at((int)pNy))
+
+	{
+		g.ground.at((int)pNx)++;
+
+		g.ground.at((int)pNx - 1)++;
+
+		g.ground.at((int)pNx + 1)++;
+	}
+	
+	//makes it so if the bullet is within col of player 1, it will hit
+	if (bulleth >= g.ground.at(players[0].col) - 1 && bulletv <= players[0].col + 1 || bulleth <= g.ground.at(players[0].col) && bulletv >= players[0].col - 1)
+	{
+		players[0].health--;
+		if (players[0].health == 0)
+		{
+			ss = stringstream();
+			ss << "Player 1 is Dead! ";
+			move(2, COLS / 5 - 3);
+			addstr(ss.str().c_str());
+
+			Sleep(1000);
+			refresh();
+		}
+	}
+
+	//makes it so if the bullet is within col of player 2, it will hit
+	if (bulleth >= g.ground.at(players[1].col) && bulletv <= players[1].col + 1 || bulleth <= g.ground.at(players[1].col) && bulletv >= players[1].col - 1)
+	{
+		players[1].health--;
+		if (players[1].health == 0)
+		{
+			ss = stringstream();
+			ss << "Player 2 is Dead! ";
+			move(2, COLS / 5 - 3);
+			addstr(ss.str().c_str());
+
+			Sleep(1000);
+			refresh();
+		}
+	}
+	
+	
 }
+
 int main(int argc, char * argv[])
 {
 	srand((unsigned int)time(nullptr));
@@ -412,7 +454,7 @@ int main(int argc, char * argv[])
 #if defined(WIN32)
 		case PADENTER:
 #endif
-			Shoot(g, players, turn, bulleth, bulletv, hit);
+			Shoot(g, players, turn, bulleth, bulletv);
 			//HitBox(players[1].Initialize(), )
 			turn = 1 - turn;
 			break;

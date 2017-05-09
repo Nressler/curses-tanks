@@ -20,7 +20,6 @@ const double Player::angle_increment = 1;
 Player::Player()
 {
 	s = LEFT;
-	int col;
 	angle = 45.0;
 	power = 50.0;
 	health = 1;
@@ -34,19 +33,21 @@ void Player::Initialize(int column, Side side)
 
 void Player::Draw(Ground & g)
 {
-	mvaddch(g.ground.at(col) - 1, col + 1, ACS_BLOCK);
+	mvaddch(g.ground.at(col) - 1, col, ACS_BLOCK);
 }
 
 void Player::PowerUp()
 {
 	power += power_increment;
+	if (power >= 75)
+		power = 75;
 }
 
 void Player::PowerDown()
 {
 	power -= power_increment;
 	if (power <= 0)
-		power = power_increment;
+		power = 1;
 }
 
 void Player::AngleUp()
