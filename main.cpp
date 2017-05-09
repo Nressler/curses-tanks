@@ -24,7 +24,40 @@ extern int base_height_divisor;
 extern int max_height_divisor;
 
 const double PI = 3.141592653589793238463;
+void P1Win(Player * players)
+{
+	if (players[1].health == 0)
+	{
+		erase();
+		initscr();
+		noecho();
+		keypad(stdscr, 1);
+		refresh();
 
+		stringstream ss;
+		ss = stringstream();
+		move(1, COLS / 2 - 3);
+		ss << "Player 1 Wins!";
+		addstr(ss.str().c_str());
+	}
+}
+void P2Win(Player * players)
+{
+	if (players[0].health == 0)
+	{
+		erase();
+		initscr();
+		noecho();
+		keypad(stdscr, 1);
+		refresh();
+		stringstream ss;
+		ss = stringstream();
+		move(1, COLS / 2 - 3);
+		ss << "Player 2 Wins!";
+		addstr(ss.str().c_str());
+	}
+
+}
 void MySleep(int milliseconds)
 {
 #if defined(_WIN32)
@@ -45,6 +78,11 @@ void DrawScreen(Ground & g, Player * players, int turn)
 
 int MainMenu()
 {
+	erase();
+	initscr();
+	noecho();
+	keypad(stdscr, 1);
+	refresh();
 	start_color();
 	init_color(COLOR_RED, 1000, 0, 0);
 	init_pair(1, COLOR_RED, COLOR_BLACK);
@@ -283,6 +321,7 @@ void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
 	bulleth = pNx + 1;
 	bulletv = pNy;
 
+	/*
 	stringstream ss;
 	ss = stringstream();
 	ss << "col: " << bulleth;
@@ -296,9 +335,9 @@ void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
 	addstr(ss.str().c_str());
 	refresh();
 
-	
+	*/
 
-	Sleep(1500);
+	//Sleep(1500);
 	
 
 	//makes it so if the bullet is within col of player 1, it will hit
@@ -320,25 +359,15 @@ void Shoot(Ground & g, Player * players, int turn, int bulleth, int bulletv)
 		players[1].health--;
 		}
 	}
+
 	if (players[0].health == 0)
 	{
-		ss = stringstream();
-		ss << "Player 1 is Dead! ";
-		move(2, COLS / 5 - 3);
-		addstr(ss.str().c_str());
-
-		Sleep(1000);
-		refresh();
+		P2Win(players);
 	}
 	if (players[1].health == 0)
 	{
-		ss = stringstream();
-		ss << "Player 2 is Dead! ";
-		move(2, COLS / 5 - 3);
-		addstr(ss.str().c_str());
-
-		Sleep(1000);
-		refresh();
+		
+		P1Win(players);
 	}
 }
 	
@@ -397,19 +426,19 @@ int main(int argc, char * argv[])
 			keep_going = false;
 			break;
 
-		case 's':
+		case KEY_DOWN:
 			players[turn].PowerDown();
 			break;
 
-		case 'w':
+		case KEY_UP:
 			players[turn].PowerUp();
 			break;
 
-		case 'd':
+		case KEY_RIGHT:
 			players[turn].AngleUp();
 			break;
 
-		case 'a':
+		case KEY_LEFT:
 			players[turn].AngleDown();
 			break;
 
@@ -421,7 +450,10 @@ int main(int argc, char * argv[])
 			Shoot(g, players, turn, bulleth, bulletv);
 			turn = 1 - turn;
 			break;
-			
+			players[1].health == 0;
+			break;
+			players[2].health == 0;
+			break;
 		default:
 			show_char = true;
 			break;
@@ -434,6 +466,7 @@ int main(int argc, char * argv[])
 			addstr(ss.str().c_str());
 			refresh();
 		}
+	
 	}
 	/*
 	erase();
