@@ -19,6 +19,7 @@ const double Player::angle_increment = 1;
 
 Player::Player()
 {
+	bool Win_check = false;
 	s = LEFT;
 	col = 0;
 	line = 0;
