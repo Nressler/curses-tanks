@@ -45,37 +45,139 @@ void DrawScreen(Ground & g, Player * players, int turn)
 
 int MainMenu()
 {
+	start_color();
+	init_color(COLOR_RED, 1000, 0, 0);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(3, COLOR_GREEN, COLOR_BLACK);
+	init_pair(4, COLOR_CYAN, COLOR_BLACK);
+	init_pair(5, COLOR_BLUE, COLOR_BLACK);
+	init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+;
 	int rv = 0;
 	
-	//init_pair(1, COLOR_RED, COLOR_BLACK);
-	//attron(COLOR_PAIR(1));
-	WINDOW *w;
-	w = newwin(10, 12, 1, 1);
-	box(w, 0, 0);
 	stringstream ss;
+	attron(COLOR_PAIR(1));
 	ss = stringstream();
-	move(LINES / 4, 30);
-	ss << "Welcome to Tanks!";
-	addstr(ss.str().c_str());
-	ss = stringstream();
-	move(LINES / 3, 20);
-	ss << "Created by Nick Ressler & Eryn Benner";
-	addstr(ss.str().c_str());
-	ss = stringstream();
-	move(LINES / 2, 24);
-	ss << "Press The 'E' Key to Continue";
-	addstr(ss.str().c_str());
-	char c = getch();
-	switch (c)
-	{
-	case 'e':
-	case 'E':
-		rv = 4;
-		break;
-	}
-			//add a case where if none of the options are chosen nothing happens
-			noecho();
+	ss << " _    _      _                            _          _____           _        _";
+	mvaddstr(1, COLS / 2 - 42, ss.str().c_str());
 
+	ss = stringstream();
+	ss << "| |  | |    | |                          | |        |_   _|         | |      | |";
+	mvaddstr(2, COLS / 2 - 42, ss.str().c_str());
+	attroff(COLOR_PAIR(1));
+	ss = stringstream();
+	attron(COLOR_PAIR(2));
+		ss << "| |  | | ___| | ___ ___  _ __ ___   ___  | |_ ___     | | __ _ _ __ | | _____| |";
+	mvaddstr(3, COLS / 2 - 42, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "| |/\\| |/ _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\    | |/ _` | '_ \\| |/ / __| |";
+	mvaddstr(4, COLS / 2 - 42, ss.str().c_str());
+	attroff(COLOR_PAIR(2));
+	ss = stringstream();
+	attron(COLOR_PAIR(3));
+	ss << "\\  /\\  /  __/ | (_| (_) | | | | | |  __/ | || (_) |   | | (_| | | | |   <\\__ \\_|";
+	mvaddstr(5, COLS / 2 - 42, ss.str().c_str());
+
+	ss = stringstream();
+	ss << " \\/  \\/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/    \\_/\\__,_|_| |_|_|\\_\\___(_)";
+	mvaddstr(6, COLS / 2 - 42, ss.str().c_str());
+	attroff(COLOR_PAIR(3));
+
+	attron(COLOR_PAIR(4));
+	ss = stringstream();
+	ss << "  ___              _          _   _         ";
+	mvaddstr(8, COLS / 2 - 24, ss.str().c_str());
+
+	ss = stringstream();
+	ss << " / __|_ _ ___ __ _| |_ ___ __| | | |__ _  _ ";
+	mvaddstr(9, COLS / 2 - 24, ss.str().c_str());
+	
+	ss = stringstream();
+	ss << "| (__| '_/ -_) _` |  _/ -_) _` | | '_ \\ || |";
+	mvaddstr(10, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(4));
+	attron(COLOR_PAIR(5));
+	ss = stringstream();
+	ss << " \\___|_| \\___\\__,_|\\__\\___\\__,_| |_.__/\\_, |";
+	mvaddstr(11, COLS / 2 - 24, ss.str().c_str());
+	
+	ss = stringstream();
+	ss << "                                       |__/ ";
+	mvaddstr(12, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(5));
+	//Nick Ressler Sign//
+	attron(COLOR_PAIR(6));
+	ss = stringstream();
+	ss << " _  _ _    _     ___           _         ";
+	mvaddstr(13, COLS / 2 - 23, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "| \\| (_)__| |__ | _ \\___ _____| |___ _ _ ";
+	mvaddstr(14, COLS / 2 - 23, ss.str().c_str());
+	attroff(COLOR_PAIR(6));
+	attron(COLOR_PAIR(1));
+	ss = stringstream();
+	ss << "| .` | / _| / / |   / -_|_-<_-< / -_) '_|";
+	mvaddstr(15, COLS / 2 - 23, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "|_|\\_|_\\__|_\\_\\ |_|_\\___/__/__/_\\___|_|  ";
+	mvaddstr(16, COLS / 2 - 23, ss.str().c_str());
+	attroff(COLOR_PAIR(1));
+	attron(COLOR_PAIR(2));
+	//& Sign//
+
+	ss = stringstream();
+	ss << " __     ";
+	mvaddstr(17, COLS / 2 - 4, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "/ _|___ ";
+	mvaddstr(18, COLS / 2 - 4, ss.str().c_str());
+	attroff(COLOR_PAIR(2));
+	attron(COLOR_PAIR(3));
+	ss = stringstream();
+	ss << "> _|_ _|";
+	mvaddstr(19, COLS / 2 - 4, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "\\_____| ";
+	mvaddstr(20, COLS / 2 - 4, ss.str().c_str());
+	attroff(COLOR_PAIR(3));
+	attron(COLOR_PAIR(4));
+	//Eryn Benner Sign//
+
+	ss = stringstream();
+	ss << " ___                 ___                        ";
+	mvaddstr(21, COLS / 2 - 24, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "| __|_ _ _  _ _ _   | _ ) ___ _ _  _ _  ___ _ _ ";
+	mvaddstr(22, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(4));
+	attron(COLOR_PAIR(5));
+	ss = stringstream();
+	ss << "| _|| '_| || | ' \\  | _ \\/ -_) ' \\| ' \\/ -_) '_|";
+	mvaddstr(23, COLS / 2 - 24, ss.str().c_str());
+
+	ss = stringstream();
+	ss << "|___|_|  \\_, |_||_| |___/\\___|_||_|_||_\\___|_|  ";
+	mvaddstr(24, COLS / 2 - 24, ss.str().c_str());
+	attroff(COLOR_PAIR(5));
+	ss = stringstream();
+	move(LINES - 3, 48);
+	ss << "Press ENTER to Continue";
+	addstr(ss.str().c_str());
+
+	char c = getch();
+	if (c == 10)
+		rv = 4;
+
+	//add a case where if none of the options are chosen nothing happens
+
+	noecho();
 	return rv;
 }
 

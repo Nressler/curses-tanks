@@ -69,6 +69,7 @@ void Player::AngleDown()
 
 void Player::DrawSettings(int turn)
 {
+	init_pair(1, COLOR_RED, COLOR_BLACK);
 	bool my_turn = (turn == 0 && s == LEFT) || (turn == 1 && s == RIGHT);
 
 	int starting_column = 2;
@@ -93,12 +94,14 @@ void Player::DrawSettings(int turn)
 	ss = stringstream();
 	ss << setw(10) << left << "Power: " << setw(6) << power;
 	mvaddstr(line++, starting_column, ss.str().c_str());
-
+	
 	ss = stringstream();
+	
 	for (unsigned int i = 0; i < health; i++)
 	{
+		attron(COLOR_PAIR(1));
 		ss << "# ";
 	}
 	mvaddstr(line++, starting_column, ss.str().c_str());
-
+	attroff(COLOR_PAIR(1));
 }
