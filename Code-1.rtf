@@ -1,0 +1,451 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.14393}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang9\par
+#include <iostream> //Eryn Benner// & // Nick Ressler\par
+#include <sstream>\par
+#include <iomanip>\par
+#include <vector>\par
+#include <ctime>\par
+#include <cmath>\par
+\par
+#if defined(WIN32)\par
+#include <Windows.h>\par
+#include "curses.h"\par
+#else\par
+#include <curses.h>\par
+#include <cstdlib>\par
+#include <unistd.h>\par
+#endif\par
+\par
+#include "ground.hpp"\par
+#include "player.hpp"\par
+#include "Vec2D.hpp"\par
+\par
+using namespace std;\par
+\par
+extern int base_height_divisor;\par
+extern int max_height_divisor;\par
+\par
+const double PI = 3.141592653589793238463;\par
+\par
+void MySleep(int milliseconds)\par
+\{\par
+#if defined(_WIN32)\par
+\tab Sleep(milliseconds);\par
+#endif\par
+\}\par
+void DrawScreen(Ground & g, Player * players, int turn)\par
+\{\par
+\tab erase();\par
+\tab box(stdscr, 0, 0);\par
+\tab g.Draw();\par
+\tab players[0].Draw(g);\par
+\tab players[1].Draw(g);\par
+\tab players[0].DrawSettings(turn);\par
+\tab players[1].DrawSettings(turn);\par
+\tab refresh();\par
+\}\par
+int MainMenu()\par
+\par
+\{\par
+\tab start_color();\par
+\tab init_color(COLOR_RED, 1000, 0, 0);\par
+\tab init_pair(1, COLOR_RED, COLOR_BLACK);\par
+\tab init_pair(2, COLOR_YELLOW, COLOR_BLACK);\par
+\tab init_pair(3, COLOR_GREEN, COLOR_BLACK);\par
+\tab init_pair(4, COLOR_CYAN, COLOR_BLACK);\par
+\tab init_pair(5, COLOR_BLUE, COLOR_BLACK);\par
+\tab init_pair(6, COLOR_MAGENTA, COLOR_BLACK);\par
+\tab int rv = 0;\par
+\tab\par
+\tab WINDOW *w;\par
+\tab w = newwin(10, 12, 1, 1);\par
+\tab box(w, 0, 0);\par
+\tab stringstream ss;\par
+\par
+\tab //Welcome to Tanks! Sign//\par
+\tab attron(COLOR_PAIR(1));\par
+\tab ss = stringstream();\par
+\tab ss << " _    _      _                            _          _____           _        _";\par
+\tab mvaddstr(1, COLS /2 - 42, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "| |  | |    | |                          | |        |_   _|         | |      | |";\par
+\tab mvaddstr(2, COLS / 2 - 42, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(1));\par
+\par
+\tab ss = stringstream();\par
+\tab attron(COLOR_PAIR(2));\par
+\tab ss << "| |  | | ___| | ___ ___  _ __ ___   ___  | |_ ___     | | __ _ _ __ | | _____| |";\par
+\tab mvaddstr(3, COLS / 2 - 42, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "| |/\\\\| |/ _ \\\\ |/ __/ _ {{\field{\*\fldinst{HYPERLINK "\\\\\\\\|"}}{\fldrslt{\\\\|\ul0\cf0}}}}\f0\fs22  '_ ` _ \\\\ / _ \\\\ | __/ _ \\\\    | |/ _` | '_ {{\field{\*\fldinst{HYPERLINK "\\\\\\\\|"}}{\fldrslt{\\\\|\ul0\cf0}}}}\f0\fs22  |/ / __| |";\par
+\tab mvaddstr(4, COLS / 2 - 42, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(2));\par
+\par
+\tab ss = stringstream();\par
+\tab attron(COLOR_PAIR(3));\par
+\tab ss << "\\\\  /\\\\  /  __/ | (_| (_) | | | | | |  __/ | || (_) |   | | (_| | | | |   <{{\field{\*\fldinst{HYPERLINK "\\\\\\\\__"}}{\fldrslt{\\\\__\ul0\cf0}}}}\f0\fs22  {{\field{\*\fldinst{HYPERLINK "\\\\\\\\_|"}}{\fldrslt{\\\\_|\ul0\cf0}}}}\f0\fs22 ";\par
+\tab mvaddstr(5, COLS / 2 - 42, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << " {{\field{\*\fldinst{HYPERLINK "\\\\\\\\/"}}{\fldrslt{\\\\/\ul0\cf0}}}}\f0\fs22   {{\field{\*\fldinst{HYPERLINK "\\\\\\\\/"}}{\fldrslt{\\\\/\ul0\cf0}}}}\f0\fs22  {{\field{\*\fldinst{HYPERLINK "\\\\\\\\___|_|\\\\\\\\___\\\\\\\\___/|_|"}}{\fldrslt{\\\\___|_|\\\\___\\\\___/|_|\ul0\cf0}}}}\f0\fs22  |_| |_|\\\\___|  {{\field{\*\fldinst{HYPERLINK "\\\\\\\\__\\\\\\\\___/"}}{\fldrslt{\\\\__\\\\___/\ul0\cf0}}}}\f0\fs22     {{\field{\*\fldinst{HYPERLINK "\\\\\\\\_/\\\\\\\\__,_|_|"}}{\fldrslt{\\\\_/\\\\__,_|_|\ul0\cf0}}}}\f0\fs22  |_|_|\\\\_\\\\___(_)";\par
+\tab mvaddstr(6, COLS / 2 - 42, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(3));\par
+\par
+\tab //Created by Sign//\par
+\tab attron(COLOR_PAIR(4));\par
+\tab ss = stringstream();\par
+\tab ss << "  ___              _          _   _         ";\par
+\tab mvaddstr(8, COLS / 2 - 24,ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << " / __|_ _ ___ __ _| |_ ___ __| | | |__ _  _ ";\par
+\tab mvaddstr(9, COLS / 2 - 24, ss.str().c_str());\par
+\tab\par
+\tab ss = stringstream();\par
+\tab ss << "| (__| '_/ -_) _` |  _/ -_) _` | | '_ \\\\ || |";\par
+\tab mvaddstr(10, COLS / 2 - 24, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(4));\par
+\par
+\tab attron(COLOR_PAIR(5));\par
+\tab ss = stringstream();\par
+\tab ss << " {{\field{\*\fldinst{HYPERLINK "\\\\\\\\___|_|"}}{\fldrslt{\\\\___|_|\ul0\cf0}}}}\f0\fs22  {{\field{\*\fldinst{HYPERLINK "\\\\\\\\___\\\\\\\\__,_|\\\\\\\\__\\\\\\\\___\\\\\\\\__,_|"}}{\fldrslt{\\\\___\\\\__,_|\\\\__\\\\___\\\\__,_|\ul0\cf0}}}}\f0\fs22  |_.__/\\\\_, |";\par
+\tab mvaddstr(11, COLS / 2 - 24, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "                                       |__/ ";\par
+\tab mvaddstr(12, COLS / 2 - 24, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(5));\par
+\par
+\tab //Nick Ressler Sign//\par
+\tab attron(COLOR_PAIR(6));\par
+\tab ss = stringstream();\par
+\tab ss << " _  _ _    _     ___           _         ";\par
+\tab mvaddstr(13, COLS / 2 - 23, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "| {{\field{\*\fldinst{HYPERLINK "\\\\\\\\|"}}{\fldrslt{\\\\|\ul0\cf0}}}}\f0\fs22  (_)__| |__ | _ {{\field{\*\fldinst{HYPERLINK "\\\\\\\\___"}}{\fldrslt{\\\\___\ul0\cf0}}}}\f0\fs22  _____| |___ _ _ ";\par
+\tab mvaddstr(14, COLS / 2 - 23, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(6));\par
+\tab attron(COLOR_PAIR(1));\par
+\tab ss = stringstream();\par
+\tab ss << "| .` | / _| / / |   / -_|_-<_-< / -_) '_|";\par
+\tab mvaddstr(15, COLS / 2 - 23, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "|_|\\\\_|_\\\\__|_\\\\_\\\\ |_|_\\\\___/__/__/_\\\\___|_|  ";\par
+\tab mvaddstr(16, COLS / 2 - 23, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(1));\par
+\tab attron(COLOR_PAIR(2));\par
+\tab //& Sign//\par
+\par
+\tab ss = stringstream();\par
+\tab ss << " __     ";\par
+\tab mvaddstr(17, COLS / 2 - 4, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "/ _|___ ";\par
+\tab mvaddstr(18, COLS / 2 - 4, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(2));\par
+\tab attron(COLOR_PAIR(3));\par
+\tab ss = stringstream();\par
+\tab ss << "> _|_ _|";\par
+\tab mvaddstr(19, COLS / 2 - 4, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "{{\field{\*\fldinst{HYPERLINK "\\\\\\\\_____| "}}{\fldrslt{\\\\_____| \ul0\cf0}}}}\f0\fs22 ";\par
+\tab mvaddstr(20, COLS / 2 - 4, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(3));\par
+\tab attron(COLOR_PAIR(4));\par
+\par
+\tab //Eryn Benner Sign//\par
+\par
+\tab ss = stringstream();\par
+\tab ss << " ___                 ___                        ";\par
+\tab mvaddstr(21, COLS / 2 - 24, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "| __|_ _ _  _ _ _   | _ ) ___ _ _  _ _  ___ _ _ ";\par
+\tab mvaddstr(22, COLS / 2 - 24, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(4));\par
+\tab attron(COLOR_PAIR(5));\par
+\tab ss = stringstream();\par
+\tab ss << "| _|| '_| || | ' \\\\  | _ {{\field{\*\fldinst{HYPERLINK "\\\\\\\\/"}}{\fldrslt{\\\\/\ul0\cf0}}}}\f0\fs22  -_) ' {{\field{\*\fldinst{HYPERLINK "\\\\\\\\|"}}{\fldrslt{\\\\|\ul0\cf0}}}}\f0\fs22  ' {{\field{\*\fldinst{HYPERLINK "\\\\\\\\/"}}{\fldrslt{\\\\/\ul0\cf0}}}}\f0\fs22  -_) '_|";\par
+\tab mvaddstr(23, COLS / 2 - 24, ss.str().c_str());\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "|___|_|  {{\field{\*\fldinst{HYPERLINK "\\\\\\\\_"}}{\fldrslt{\\\\_\ul0\cf0}}}}\f0\fs22 , |_||_| |___/\\\\___|_||_|_||_\\\\___|_|  ";\par
+\tab mvaddstr(24, COLS / 2 - 24, ss.str().c_str());\par
+\tab attroff(COLOR_PAIR(5));\par
+\par
+\tab ss = stringstream();\par
+\tab move(LINES - 2, 43);\par
+\tab ss << "Press ENTER to Continue";\par
+\tab addstr(ss.str().c_str());\par
+\par
+\tab char c = getch();\par
+\tab if(c == 10)\par
+\tab\tab rv = 4;\par
+\tab\par
+\tab //add a case where if none of the options are chosen nothing happens\par
+\par
+\tab noecho();\par
+\tab return rv;\par
+\}\par
+\tab //http://www.iforce2d.net/b2dtut/projected-trajectory\par
+\par
+\par
+void Shoot(Ground & g, Player * players, int turn, double bulleth, double bulletv)\par
+\{\par
+\tab double angle = players[turn].angle / 180.0 * PI;\par
+\tab //vertical\par
+\tab double y_component = sin(angle) * players[turn].power * 0.2;\par
+\tab //horizontal\par
+\tab double x_component = cos(angle) * players[turn].power * 0.2;\par
+\par
+\tab double pNx;\par
+\tab double pNy;\par
+\par
+\tab //flips the bullet if it's the player on the other side of the screen\par
+\tab if (players[turn].s == RIGHT)\par
+\tab\tab x_component = -x_component;\par
+\par
+\tab double p0x = players[turn].col;\par
+\tab double p0y = g.ground.at(players[turn].col);\par
+\tab // higher ground numbers are lower altitudes (0 is first line, etc).\par
+\par
+\tab p0y = LINES - p0y;\par
+\par
+\tab for (int i = 1; i < 5000; i++)\par
+\tab\{\par
+\tab\tab double di = i / 5.0;\par
+\par
+\tab\tab pNx = (int)(p0x + di * x_component);\par
+\tab\tab pNy = p0y + di * y_component + (di * di + di) * -0.98 / 2.0;\par
+\tab\tab pNy = (int)(LINES - pNy);\par
+\tab\tab //if it goes too far left or too far right this ends the turn\par
+\tab\tab if (pNx < 2 || pNx >= COLS - 2)\par
+\tab\tab\tab break;\par
+\tab\tab //if this goes off the screen upwards it just sleeps until the bomb comes back in\par
+\tab\tab if (pNy < 1) \{\par
+\tab\tab\tab Sleep(50);\par
+\tab\tab\tab continue;\par
+\tab\tab\}\par
+\par
+\tab\tab //if bullet goes off the screen \par
+\tab\tab if (pNy >= LINES - 2)\par
+\tab\tab\tab break;\par
+\par
+\tab\tab //Bullet wont go through the ground\par
+\tab\tab if (pNx >= g.ground.at((int)pNx) && pNy == g.ground.at((int)pNy))\par
+\tab\tab\tab break;\par
+\tab\tab\par
+\tab\tab //this makes the bullet only one\par
+\tab\tab erase();\par
+\tab\tab DrawScreen(g, players, turn);\par
+\tab\tab mvaddch((int)pNy - 1, (int)pNx, ACS_LANTERN);\par
+\par
+\tab\tab refresh();\par
+\par
+\tab\tab //fast\par
+\tab\tab if (players[turn].power > 75 && players[turn].power <= 90)\par
+\par
+\tab\tab\{\par
+\tab\tab\tab Sleep(50);\par
+\tab\tab\}\par
+\par
+\tab\tab //average\par
+\tab\tab if (players[turn].power > 50 && players[turn].power <= 75)\par
+\par
+\tab\tab\{\par
+\tab\tab\tab Sleep(55);\par
+\tab\tab\}\par
+\par
+\tab\tab //slower\par
+\tab\tab if (players[turn].power > 25 && players[turn].power <= 50)\par
+\par
+\tab\tab\{\par
+\tab\tab\tab Sleep(60);\par
+\tab\tab\}\par
+\par
+\tab\tab //super slow\par
+\tab\tab if (players[turn].power <= 25)\par
+\par
+\tab\tab\{\par
+\tab\tab\tab Sleep(65);\par
+\tab\tab\}\par
+\par
+\tab\tab //if bomb is within 1 column in either direction of player 1 or on the column\par
+\tab\tab //                         line - 1                           \par
+\tab\tab //                             ^\par
+\tab\tab //             |           ____|__\par
+\tab\tab // col - 1 <-- |                  |\par
+\tab\tab //\tab\tab        |_______           | --> col + 1\par
+\tab\tab //                 |              |\par
+\tab\tab //                 V\par
+\tab\tab //               line + 1\par
+\par
+\tab bulleth = pNx; //y\par
+\tab bulletv = pNy; //x\par
+\par
+\tab //Testing bullet coordinates//\par
+\tab stringstream ss;\par
+\tab ss = stringstream();\par
+\tab ss << "col: " << bulleth;\par
+\par
+\tab mvaddstr(1, COLS / 2 - 3, ss.str().c_str());\par
+\tab refresh();\par
+\par
+\tab ss = stringstream();\par
+\tab ss << "line: " << bulletv;\par
+\par
+\tab mvaddstr(2, COLS / 2 - 3, ss.str().c_str());\par
+\tab refresh();\par
+\par
+\tab Sleep(1500);\par
+\par
+\tab if (pNy >= g.ground.at((int)pNy))\par
+\par
+\tab\{\par
+\tab\tab g.ground.at((int)pNx)++;\par
+\par
+\tab\tab g.ground.at((int)pNx - 1)++;\par
+\par
+\tab\tab g.ground.at((int)pNx + 1)++;\par
+\tab\}\par
+\tab\par
+\tab //makes it so if the bullet is within col of player 1, it will hit\par
+\tab if (bulleth >= g.ground.at(players[0].col) - 1 && bulletv <= players[0].col + 1 || bulleth <= g.ground.at(players[0].col) && bulletv >= players[0].col - 1)\par
+\tab\{\par
+\tab\tab players[0].health--;\par
+\tab\tab if (players[0].health == 0)\par
+\tab\tab\{\par
+\tab\tab\tab ss = stringstream();\par
+\tab\tab\tab ss << "Player 1 is Dead! ";\par
+\tab\tab\tab move(2, COLS / 5 - 3);\par
+\tab\tab\tab addstr(ss.str().c_str());\par
+\par
+\tab\tab\tab Sleep(1000);\par
+\tab\tab\tab refresh();\par
+\tab\tab\}\par
+\tab\}\par
+\par
+\tab //makes it so if the bullet is within col of player 2, it will hit\par
+\tab if (bulleth >= g.ground.at(players[1].col) && bulletv <= players[1].col + 1 || bulleth <= g.ground.at(players[1].col) && bulletv >= players[1].col - 1)\par
+\tab\{\par
+\tab\tab players[1].health--;\par
+\tab\tab if (players[1].health == 0)\par
+\tab\tab\{\par
+\tab\tab\tab ss = stringstream();\par
+\tab\tab\tab ss << "Player 2 is Dead! ";\par
+\tab\tab\tab move(2, COLS / 5 - 3);\par
+\tab\tab\tab addstr(ss.str().c_str());\par
+\par
+\tab\tab\tab Sleep(1000);\par
+\tab\tab\tab refresh();\par
+\tab\tab\}\par
+\tab\}\par
+\tab\par
+\tab\par
+\}\par
+\par
+int main(int argc, char * argv[])\par
+\{\par
+\tab srand((unsigned int)time(nullptr));\par
+\par
+\tab int turn = 0;\par
+\tab bool keep_going = true;\par
+\tab Ground g;\par
+\tab Player players[2];\par
+\tab\par
+\tab initscr();\par
+\tab while (true)\par
+\par
+\tab\{\par
+\tab\tab bool quit;\par
+\tab\tab quit = true;\par
+\tab\tab keypad(stdscr, 1);\par
+\tab\tab int x = 0;\par
+\tab\tab x = MainMenu();\par
+\par
+\tab\tab //quit\par
+\tab\tab if (x == 4)\par
+\par
+\tab\tab\{\par
+\tab\tab\tab quit = false;\par
+\tab\tab\tab break;\par
+\tab\tab\}\par
+\tab\}\par
+\par
+\tab clear();\par
+\tab keypad(stdscr, 1);\par
+\tab int bulleth = 0;\par
+\tab int bulletv = 0;\par
+\tab g.InitializeGround();\par
+\tab players[0].Initialize(rand() % (COLS / 4), LEFT);\par
+\tab players[1].Initialize(rand() % (COLS / 4) + 3 * COLS / 4 - 2, RIGHT);\par
+\par
+\tab DrawScreen(g, players, turn);\par
+\tab\par
+\tab while (keep_going)\par
+\tab\{\par
+\tab\tab\par
+\tab\tab bool show_char = false;\par
+\tab\tab int c = getch();\par
+\tab\tab switch (c)\par
+\tab\tab\{\par
+\tab\tab case 27:\par
+\tab\tab\tab keep_going = false;\par
+\tab\tab\tab break;\par
+\par
+\tab\tab case KEY_DOWN:\par
+\tab\tab\tab players[turn].PowerDown();\par
+\tab\tab\tab break;\par
+\par
+\tab\tab case KEY_UP:\par
+\tab\tab\tab players[turn].PowerUp();\par
+\tab\tab\tab break;\par
+\par
+\tab\tab case KEY_RIGHT:\par
+\tab\tab\tab players[turn].AngleUp();\par
+\tab\tab\tab break;\par
+\par
+\tab\tab case KEY_LEFT:\par
+\tab\tab\tab players[turn].AngleDown();\par
+\tab\tab\tab break;\par
+\par
+\tab\tab case 10:\par
+\tab\tab case KEY_ENTER:\par
+#if defined(WIN32)\par
+\tab\tab case PADENTER:\par
+#endif\par
+\tab\tab\tab Shoot(g, players, turn, bulleth, bulletv);\par
+\tab\tab\tab //HitBox(players[1].Initialize(), )\par
+\tab\tab\tab turn = 1 - turn;\par
+\tab\tab\tab break;\par
+\par
+\tab\tab default:\par
+\tab\tab\tab show_char = true;\par
+\tab\tab\tab break;\par
+\tab\tab\}\par
+\tab\tab DrawScreen(g, players, turn);\par
+\tab\tab if (show_char) \{\par
+\tab\tab\tab stringstream ss;\par
+\tab\tab\tab ss << setw(4) << c << " ";\par
+\tab\tab\tab mvaddstr(0, 1, ss.str().c_str());\par
+\tab\tab\tab refresh();\par
+\tab\tab\}\par
+\tab\}\par
+\tab erase();\par
+\tab addstr("Hit any key to exit");\par
+\tab refresh();\par
+\tab getch();\par
+\tab echo();\par
+\tab endwin();\par
+\tab return 0;\par
+\}\par
+}
+ 
